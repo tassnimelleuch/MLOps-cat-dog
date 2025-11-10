@@ -34,7 +34,6 @@ pipeline {
         stage('Setup Kaggle Credentials') {
             steps {
                 echo "🔑 Setting up Kaggle credentials..."
-                // We'll add Kaggle config later
                 sh '''
                     mkdir -p ~/.kaggle
                     echo "Kaggle setup - will be configured manually"
@@ -74,12 +73,10 @@ pipeline {
     post {
         always {
             echo "🚀 Pipeline execution completed!"
-            // Clean up workspace to save disk space
             sh 'find . -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true'
         }
         success {
             echo "✅ Pipeline succeeded! Model trained and saved."
-            // You can add notifications here (email, Slack, etc.)
         }
         failure {
             echo "❌ Pipeline failed! Check the logs above."
