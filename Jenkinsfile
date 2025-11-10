@@ -2,9 +2,7 @@ pipeline {
     agent any
     
     environment {
-        // Set Python path
         PYTHONPATH = "${WORKSPACE}"
-        // Kaggle config will be set separately
     }
     
     stages {
