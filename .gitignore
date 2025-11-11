@@ -1,21 +1,23 @@
 # =====================
-# DATA & MODELS (Your existing + additions)
+# DATA & MODELS - FIXED
 # =====================
-data/                   # Raw datasets
-processed_data/         # Processed datasets
-models/                 # Trained models
-*.h5                    # Keras models
-*.pkl                   # Pickle files
-*.pth                   # PyTorch models
-*.joblib               # Joblib files
-*.onnx                 # ONNX models
-checkpoints/           # Training checkpoints
-logs/                  # Training logs
-mlruns/                # MLflow runs
-experiments/           # Experiment results
+data/*.csv
+data/*.json
+data/*.h5
+data/images/
+processed_data/
+models/*.h5
+models/*.pkl
+models/*.pth
+models/*.joblib
+models/*.onnx
+checkpoints/
+logs/
+mlruns/
+experiments/
 
 # =====================
-# PYTHON (Your existing - good!)
+# PYTHON
 # =====================
 __pycache__/
 *.py[cod]
@@ -39,7 +41,7 @@ wheels/
 *.egg
 
 # =====================
-# ENVIRONMENT (Your existing - good!)
+# ENVIRONMENT
 # =====================
 .env
 .venv
@@ -50,7 +52,7 @@ env.bak/
 venv.bak/
 
 # =====================
-# IDE (Your existing - good!)
+# IDE
 # =====================
 .vscode/
 .idea/
@@ -58,21 +60,19 @@ venv.bak/
 *.swo
 
 # =====================
-# OS (Your existing - good!)
+# OS
 # =====================
 .DS_Store
 Thumbs.db
 
 # =====================
-# 🚨 CRITICAL ADDITIONS FOR MLOPs/SECURITY
+# SECURITY
 # =====================
-
-# API Keys & Credentials
-kaggle.json            # Kaggle API key
-*.key                  # Any API keys
+kaggle.json
+*.key
 *.secret
 credentials.json
-service-account*.json  # GCP/AWS service accounts
+service-account*.json
 .env.local
 .env.*.local
 
@@ -89,7 +89,7 @@ plugins/
 
 # Dataset caches
 .cache/
-.kaggle/              # Kaggle config directory
+.kaggle/
 
 # Temporary files
 tmp/
@@ -97,27 +97,19 @@ temp/
 *.tmp
 *.temp
 
-# Large files that shouldn't be in git
+# Large files
 *.zip
 *.tar.gz
 *.7z
 
-# Dataset files (if any get created)
+# Dataset files
 *.csv
 *.parquet
 *.feather
 
-# =====================
-# PLATFORM SPECIFIC
-# =====================
-
-# Windows
+# Platform specific
 ehthumbs.db
 Desktop.ini
-
-# Linux
 *~
-
-# Mac
 .AppleDouble
 .LSOverride
