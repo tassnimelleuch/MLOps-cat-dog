@@ -1,10 +1,22 @@
-# Data
-data/
-models/
-*.h5
-*.pkl
+# =====================
+# DATA & MODELS (Your existing + additions)
+# =====================
+data/                   # Raw datasets
+processed_data/         # Processed datasets
+models/                 # Trained models
+*.h5                    # Keras models
+*.pkl                   # Pickle files
+*.pth                   # PyTorch models
+*.joblib               # Joblib files
+*.onnx                 # ONNX models
+checkpoints/           # Training checkpoints
+logs/                  # Training logs
+mlruns/                # MLflow runs
+experiments/           # Experiment results
 
-# Python
+# =====================
+# PYTHON (Your existing - good!)
+# =====================
 __pycache__/
 *.py[cod]
 *$py.class
@@ -26,7 +38,9 @@ wheels/
 .installed.cfg
 *.egg
 
-# Environment
+# =====================
+# ENVIRONMENT (Your existing - good!)
+# =====================
 .env
 .venv
 env/
@@ -35,12 +49,75 @@ ENV/
 env.bak/
 venv.bak/
 
-# IDE
+# =====================
+# IDE (Your existing - good!)
+# =====================
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# OS
+# =====================
+# OS (Your existing - good!)
+# =====================
 .DS_Store
 Thumbs.db
+
+# =====================
+# 🚨 CRITICAL ADDITIONS FOR MLOPs/SECURITY
+# =====================
+
+# API Keys & Credentials
+kaggle.json            # Kaggle API key
+*.key                  # Any API keys
+*.secret
+credentials.json
+service-account*.json  # GCP/AWS service accounts
+.env.local
+.env.*.local
+
+# Jenkins specific
+.jenkins/
+workspace/
+jobs/
+plugins/
+.hudson/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Dataset caches
+.cache/
+.kaggle/              # Kaggle config directory
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Large files that shouldn't be in git
+*.zip
+*.tar.gz
+*.7z
+
+# Dataset files (if any get created)
+*.csv
+*.parquet
+*.feather
+
+# =====================
+# PLATFORM SPECIFIC
+# =====================
+
+# Windows
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# Mac
+.AppleDouble
+.LSOverride
