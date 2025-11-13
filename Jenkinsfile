@@ -23,10 +23,16 @@ pipeline {
                 sh '''
                     python3 --version
                     pip3 --version
+                    # Install venv package if missing
+                    if ! python3 -c "import venv" 2>/dev/null; then
+                        echo "Installing python3-venv..."
+                        sudo apt-get update && sudo apt-get install -y python3.10-venv
+                    fi
+                    # Create virtual environment
                     python3 -m venv $VENV_PATH
                     . $VENV_PATH/bin/activate
                     pip install --upgrade pip
-                    echo "Virtual environment created at: $VENV_PATH"
+                    echo "✅ Virtual environment created at: $VENV_PATH"
                 '''
             }
         }
@@ -38,8 +44,9 @@ pipeline {
                     . $VENV_PATH/bin/activate
                     echo "Installing from requirements.txt..."
                     pip install -r requirements.txt
-                    echo "Installed packages:"
-                    pip list | grep -E "(kaggle|tensorflow|keras|pandas|numpy)"
+                    echo "✅ Dependencies installed successfully"
+                    echo "Key packages:"
+                    pip list | grep -E "(kaggle|tensorflow|keras|pandas|numpy|scikit-learn)"
                 '''
             }
         }
@@ -56,6 +63,9 @@ pipeline {
                         echo "✅ Kaggle credentials configured successfully"
                         echo "Kaggle directory contents:"
                         ls -la ~/.kaggle/
+                        # Test Kaggle authentication
+                        . $VENV_PATH/bin/activate
+                        python -c "import kaggle; print('✅ Kaggle API imported successfully')"
                     '''
                 }
             }
