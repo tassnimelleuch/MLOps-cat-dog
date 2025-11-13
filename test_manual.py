@@ -12,7 +12,6 @@ from src.utils.config import MODELS_DIR, IMG_HEIGHT, IMG_WIDTH
 def predict_image(image_path):
     """Predict if image is cat or dog"""
     
-    # Load the trained model
     model_path = MODELS_DIR / "cat_dog_model.h5"
     if not model_path.exists():
         print("❌ Model not found! Train the model first.")
