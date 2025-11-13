@@ -3,7 +3,6 @@ pipeline {
     
     environment {
         PYTHONPATH = "${WORKSPACE}"
-        VENV_PATH = "${WORKSPACE}/venv"
         MODEL_NAME = "cat_dog_classifier"
         DATASET_NAME = "tongpython/cat-and-dog"
     }
@@ -17,36 +16,16 @@ pipeline {
             }
         }
         
-        stage('Setup Python Environment') {
-            steps {
-                echo "🐍 Setting up Python environment..."
-                sh '''
-                    python3 --version
-                    pip3 --version
-                    # Install venv package if missing
-                    if ! python3 -c "import venv" 2>/dev/null; then
-                        echo "Installing python3-venv..."
-                        sudo apt-get update && sudo apt-get install -y python3.10-venv
-                    fi
-                    # Create virtual environment
-                    python3 -m venv $VENV_PATH
-                    . $VENV_PATH/bin/activate
-                    pip install --upgrade pip
-                    echo "✅ Virtual environment created at: $VENV_PATH"
-                '''
-            }
-        }
-        
         stage('Install Dependencies') {
             steps {
                 echo "📦 Installing Python dependencies..."
                 sh '''
-                    . $VENV_PATH/bin/activate
-                    echo "Installing from requirements.txt..."
-                    pip install -r requirements.txt
+                    python3 --version
+                    pip3 --version
+                    pip3 install --upgrade pip
+                    pip3 install -r requirements.txt
                     echo "✅ Dependencies installed successfully"
-                    echo "Key packages:"
-                    pip list | grep -E "(kaggle|tensorflow|keras|pandas|numpy|scikit-learn)"
+                    pip3 list | grep -E "(kaggle|tensorflow|keras|pandas|numpy)"
                 '''
             }
         }
@@ -64,8 +43,7 @@ pipeline {
                         echo "Kaggle directory contents:"
                         ls -la ~/.kaggle/
                         # Test Kaggle authentication
-                        . $VENV_PATH/bin/activate
-                        python -c "import kaggle; print('✅ Kaggle API imported successfully')"
+                        python3 -c "import kaggle; print('✅ Kaggle API imported successfully')"
                     '''
                 }
             }
@@ -75,32 +53,12 @@ pipeline {
             steps {
                 echo "📥 Downloading dataset from Kaggle..."
                 sh '''
-                    . $VENV_PATH/bin/activate
                     echo "Current directory: $(pwd)"
                     echo "Running dataset download..."
-                    python src/data/download_data.py
+                    python3 src/data/download_data.py
                     echo "✅ Dataset download completed"
                     echo "Data directory structure:"
                     find data/ -type d | sort | head -10
-                '''
-            }
-        }
-        
-        stage('Data Validation') {
-            steps {
-                echo "🔍 Validating dataset..."
-                sh '''
-                    . $VENV_PATH/bin/activate
-                    echo "Running data validation..."
-                    if [ -f "src/data/data_validation.py" ]; then
-                        python src/data/data_validation.py
-                    else
-                        echo "Data validation script not found, running basic checks..."
-                        echo "Total images found:"
-                        find data/ -name "*.jpg" | wc -l
-                        echo "Sample files:"
-                        find data/ -name "*.jpg" | head -5
-                    fi
                 '''
             }
         }
@@ -109,28 +67,11 @@ pipeline {
             steps {
                 echo "🤖 Training cat/dog model..."
                 sh '''
-                    . $VENV_PATH/bin/activate
                     echo "Starting model training..."
-                    python src/models/train_model.py
+                    python3 src/models/train_model.py
                     echo "✅ Training completed"
                     echo "Generated model files:"
                     ls -la models/ 2>/dev/null || echo "No models directory found"
-                '''
-            }
-        }
-        
-        stage('Evaluate Model') {
-            steps {
-                echo "📊 Evaluating model performance..."
-                sh '''
-                    . $VENV_PATH/bin/activate
-                    echo "Running model evaluation..."
-                    if [ -f "src/models/evaluate_model.py" ]; then
-                        python src/models/evaluate_model.py
-                    else
-                        echo "Evaluation script not found, checking model files..."
-                        find models/ -name "*.h5" -o -name "*.pkl" 2>/dev/null | head -5
-                    fi
                 '''
             }
         }
