@@ -5,7 +5,6 @@ pipeline {
         PYTHONPATH = "${WORKSPACE}"
         MODEL_NAME = "cat_dog_classifier"
         DATASET_NAME = "tongpython/cat-and-dog"
-        // Add kaggle to PATH globally for all stages
         PATH = "/var/lib/jenkins/.local/bin:${env.PATH}"
     }
     
@@ -91,23 +90,14 @@ pipeline {
                     find . -name "download_data.py" -type f
                     echo "=== RUNNING DOWNLOAD ==="
                     
-                    # Test kaggle CLI directly first
-                    echo "Testing Kaggle CLI directly..."
                     kaggle --version || echo "Kaggle CLI not available"
-                    
                     python3 src/data/download_data.py
                     
                     echo "=== VERIFY DOWNLOAD ==="
-                    echo "Data directory contents:"
                     find data/ -type f 2>/dev/null | head -10 || echo "No data files found"
-                    echo "Data directory structure:"
-                    find data/ -type d 2>/dev/null | head -10 || echo "No data directories found"
                     
-                    # Critical check - fail if no training data
-                    echo "=== CRITICAL DATA CHECK ==="
                     if [ ! -d "data/training_set/training_set" ]; then
                         echo "❌ ERROR: Training data directory not found!"
-                        echo "Current data structure:"
                         find data/ -type d 2>/dev/null
                         exit 1
                     fi
@@ -128,21 +118,16 @@ pipeline {
         // =====================
         stage('Train Model') {
             when {
-                expression { 
-                    // Only run if previous stages were successful
-                    currentBuild.result != 'FAILURE' 
-                }
+                branch 'main'  // ✅ Only run training when on main branch
             }
             steps {
-                echo "🤖 Training cat/dog model..."
+                echo "🤖 Training cat/dog model (only runs on main branch)..."
                 sh '''
                     echo "=== TRAINING SCRIPT CHECK ==="
                     find . -name "*train*" -name "*.py" | head -5
                     
                     echo "=== DATA VERIFICATION BEFORE TRAINING ==="
-                    echo "Training data check:"
                     ls -la data/training_set/training_set/ || echo "Training data missing"
-                    echo "Sample files:"
                     find data/training_set/training_set/ -name "*.jpg" | head -5
                     
                     echo "=== STARTING TRAINING ==="
@@ -160,9 +145,7 @@ pipeline {
         // =====================
         stage('Save Artifacts') {
             when {
-                expression { 
-                    currentBuild.result != 'FAILURE' 
-                }
+                branch 'main'  // ✅ Only archive artifacts on main branch
             }
             steps {
                 echo "💾 Saving model artifacts..."
@@ -182,21 +165,16 @@ pipeline {
             echo "🚀 Pipeline execution completed!"
             sh '''
                 echo "=== CLEANUP ==="
-                echo "Workspace size:"
                 du -sh . || echo "Size check failed"
-                echo "Removing credentials..."
                 rm -f ~/.kaggle/kaggle.json 2>/dev/null || true
-                echo "Final workspace contents:"
                 ls -la
             '''
         }
         success {
             echo "✅ Pipeline succeeded!"
-            // Optional: Add notifications here
         }
         failure {
-            echo "❌ Pipeline failed! Check stage where it failed above."
-            // Optional: Add failure notifications here
+            echo "❌ Pipeline failed! Check logs above."
         }
     }
     
