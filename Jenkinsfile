@@ -28,16 +28,22 @@ pipeline {
             steps {
                 echo "📦 Installing Python dependencies..."
                 sh 'pip3 install -r requirements.txt'
+                // Install kaggle CLI
+                sh 'pip3 install kaggle'
             }
         }
         
         stage('Setup Kaggle Credentials') {
             steps {
                 echo "🔑 Setting up Kaggle credentials..."
-                sh '''
-                    mkdir -p ~/.kaggle
-                    echo "Kaggle setup - will be configured manually"
-                '''
+                // Method 1: Using Jenkins credentials binding
+                withCredentials([file(credentialsId: 'kaggle-api-key', variable: 'KAGGLE_JSON')]) {
+                    sh '''
+                        mkdir -p ~/.kaggle
+                        cp $KAGGLE_JSON ~/.kaggle/kaggle.json
+                        chmod 600 ~/.kaggle/kaggle.json
+                    '''
+                }
             }
         }
         
@@ -45,6 +51,13 @@ pipeline {
             steps {
                 echo "📥 Downloading dataset from Kaggle..."
                 sh 'python3 -m src.data.download_data'
+            }
+        }
+        
+        stage('Data Validation') {
+            steps {
+                echo "🔍 Validating dataset..."
+                sh 'python3 -m src.data.data_validation'
             }
         }
         
@@ -65,7 +78,7 @@ pipeline {
         stage('Save Artifacts') {
             steps {
                 echo "💾 Saving model artifacts..."
-                archiveArtifacts artifacts: 'models/*.h5, models/*.png, models/*.json', fingerprint: true
+                archiveArtifacts artifacts: 'models/*.h5, models/*.png, models/*.json, logs/*', fingerprint: true
             }
         }
     }
@@ -73,7 +86,11 @@ pipeline {
     post {
         always {
             echo "🚀 Pipeline execution completed!"
-            sh 'find . -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true'
+            // Cleanup
+            sh '''
+                find . -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+                rm -rf ~/.kaggle/kaggle.json  # Remove credentials
+            '''
         }
         success {
             echo "✅ Pipeline succeeded! Model trained and saved."

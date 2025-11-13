@@ -65,9 +65,10 @@ def organize_data():
         return False
 
 if __name__ == "__main__":
-    # Set environment variable before any kaggle import happens
-    os.environ['KAGGLE_CONFIG_DIR'] = r'C:\Users\TASNIM\Downloads'
-    
+    # Note: do NOT hardcode KAGGLE_CONFIG_DIR here. CI or the developer
+    # should set the environment variable or place kaggle.json in
+    # ~/.kaggle. The code below assumes the environment is already
+    # prepared by the caller (local dev or CI).
     success = download_dataset()
     if success:
         organize_data()
